@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Count Money</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/css/foundation.min.css">
+
+    <link href="//cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation-datepicker/1.5.0/css/foundation-datepicker.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation-datepicker/1.5.0/js/foundation-datepicker.min.js"></script>
+
+</head>
+<body>
+
+
+
+<div class="row">
+    <div class="large-12 columns">
+        <div class="nav-bar right">
+        </div>
+        <h4>Count Money</h4>        
+        <hr/>
+    </div>
+</div>
+     
+
+<div class="row">
+    <div class="large-9 columns" role="content">
+     
+        <article>
+     
+            <h5>Payment list</h5>
+            <button class="button secondary tiny" id="addPayment" onclick="addEditableRow(null,null,null,null,null,null)">Add</button>                                  
+            <table id="tblPayments">
+            <thead>
+                <tr>
+                    <td style="display:none;">ID</td>
+                    <td>When</td>
+                    <td>Who</td>
+                    <td>Whom</td>
+                    <td>What</td>
+                    <td>How many</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+            </table>
+     
+        </article>
+    </div>
+     
+     
+    <aside class="large-3 columns">
+ 
+      <h5>Summary</h5>
+           
+      <div class="panel summary" >
+      </div>
+ 
+    </aside>
+
+</div>
+    
+     
+<footer class="row">
+    <div class="large-12 columns">
+        <hr/>
+        <div class="row">
+            <div class="large-6 columns">
+
+            </div>
+            <div class="large-6 columns">
+                
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script type="text/javascript">
+    var baseURL = "http://localhost:8082/countm";
+
+
+    function renderSummary() {
+        $.ajax({
+            url: baseURL+"/payment/summary",
+            type: "GET",
+            contentType: "application/json",
+            dataType: "json",
+            success: function(data) {
+                if (!data || !data.report) return;
+
+                $(".summary").empty();
+
+                var _html = "";
+                for (var who in data.report) {
+                    if (!data.report.hasOwnProperty(who)) continue;
+
+                    //_html += "<p>";
+                    _html += "<b>"+who+"</b><br/>";
+                    _html += data.report[who];
+                    _html += "<br/>";
+
+                }
+
+                $(".summary").html(_html);
+            },
+            error: function() {
+
+            },
+            complete: function() {
+
+            }
+        });
+    };
+
+    function cancelEdit() {
+        $("#addPayment").show();
+        $("#trEdit").remove();
+    };
+
+    function renderPayments() {
+
+        $("#tblPayments tbody").empty();
+        $.ajax({
+            url: baseURL+"/payment",
+            type: "GET",
+            success: function(data) {
+                if (!data || !data.payments) {
+                    return;
+                }
+
+                for (var i=0; i < data.payments.length; i++) {
+                    var p = data.payments[i];
+                    var _html = "<tr>"
+                        +"<td style='display:none;'></td>"
+                        +"<td>"+p.when+"</td>"
+                        +"<td>"+p.who+"</td>"
+                        +"<td>"+p.whom+"</td>"
+                        +"<td>"+p.what+"</td>"
+                        +"<td>"+p.how_many+"</td>"
+                        +'<td><button class="button secondary tiny" onclick="addEditableRow(\''+p.id+'\',\''+p.when+'\',\''+p.who+'\',\''+p.whom+'\',\''+p.what+'\',\''+p.how_many+'\')">Edit</button></td>'
+                        +"<td><button class='button secondary tiny' onclick='deletePayment(\""+p.id+"\")'>Delete</button></td>"
+                        +"</tr>";
+                    $("#tblPayments tbody").append(_html);                    
+                }
+            },
+            error: function() {
+
+            },
+            complete: function() {
+
+            }
+        });
+    };
+
+    function savePayment() {
+        var payment = {
+            id:       $("#currentId").val(),
+            when:       $("#when").val(),
+            who:        $("#who").val(),
+            whom:       $("#whom").val(),
+            what:       $("#what").val(),
+            how_many:   $("#how_many").val()
+        };
+
+        var type = $.trim(payment.id) == "" ? "POST" : "PUT";
+
+        $.ajax({
+            url: baseURL+"/payment",
+            type: type,
+            contentType: "application/json",
+            dataType: "json",
+            data: JSON.stringify(payment),
+            success: function(data) {
+                cancelEdit();
+                renderPayments();
+                renderSummary();
+            },
+            error: function() {
+
+            },
+            complete: function() {
+
+            }
+        });
+    };
+
+    function deletePayment(_id) {
+     
+        $.ajax({
+            url: baseURL+"/payment/"+_id,
+            type: "DELETE",
+            contentType: "application/json",
+            dataType: "json",
+            success: function(data) {
+                renderPayments();
+                renderSummary();
+            },
+            error: function() {
+
+            },
+            complete: function() {
+
+            }
+        });
+    };
+
+    function addEditableRow(_id, _when, _who, _whom, _what, _how_many) {
+
+        var id = _id ? _id : ""
+        var when = _when ? _when : "";
+        var who = _who ? _who : "";
+        var whom = _whom ? _whom : "";
+        var what = _what ? _what : "";
+        var how_many = _how_many ? _how_many : "";
+
+        var _html = "<tr id='trEdit'>"
+            +"<td style='display:none;'><input type='hidden' id='currentId' value='"+id+"'/></td>"
+            +"<td><input type='text' class='fdatepicker' id='when' value='"+when+"' readonly /></td>"
+            +"<td><input type='text' id='who' value='"+who+"' /></td>"
+            +"<td><input type='text' id='whom' value='"+whom+"' /></td>"
+            +"<td><input type='text' id='what' value='"+what+"' /></td>"
+            +"<td><input type='text' id='how_many' value='"+how_many+"' /></td>"
+            +"<td><button class='button secondary tiny' onclick='savePayment()'>Save</button></td>"
+            +"<td><button class='button secondary tiny' onclick='cancelEdit()'>Cancel</button></td>"
+            +"</tr>";
+        $(_html).prependTo("#tblPayments > tbody");
+        $('.fdatepicker').fdatepicker();
+
+        $("#addPayment").hide();
+    };
+
+    $(document).ready(function() {
+        renderPayments();
+        renderSummary();
+    });
+
+</script>
+</body>
+</html>
