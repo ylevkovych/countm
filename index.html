@@ -89,7 +89,7 @@
 
     function renderSummary() {
         $.ajax({
-            url: baseURL+"/payment/summary",
+            url: baseURL+"/rest/api/v1.0/payment/summary",
             type: "GET",
             contentType: "application/json",
             dataType: "json",
@@ -129,7 +129,7 @@
 
         $("#tblPayments tbody").empty();
         $.ajax({
-            url: baseURL+"/payment",
+            url: baseURL+"/rest/api/v1.0/payment",
             type: "GET",
             success: function(data) {
                 if (!data || !data.payments) {
@@ -173,7 +173,7 @@
         var type = $.trim(payment.id) == "" ? "POST" : "PUT";
 
         $.ajax({
-            url: baseURL+"/payment",
+            url: baseURL+"/rest/api/v1.0/payment",
             type: type,
             contentType: "application/json",
             dataType: "json",
@@ -195,7 +195,7 @@
     function deletePayment(_id) {
      
         $.ajax({
-            url: baseURL+"/payment/"+_id,
+            url: baseURL+"/rest/api/v1.0/payment/"+_id,
             type: "DELETE",
             contentType: "application/json",
             dataType: "json",
