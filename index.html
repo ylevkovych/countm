@@ -16,17 +16,18 @@
 </head>
 <body>
 
-
-
 <div class="row">
     <div class="large-12 columns">
         <div class="nav-bar right">
+            <a href="/countm/logout">logout</a>
         </div>
-        <h4>Count Money</h4>        
+        <div class="nav-bar left">
+
+        <h4>Count Money</h4>
+        </div>
         <hr/>
     </div>
 </div>
-     
 
 <div class="row">
     <div class="large-9 columns" role="content">
@@ -49,7 +50,6 @@
                 </tr>
             </thead>
             <tbody>
-                
             </tbody>
             </table>
      
@@ -235,6 +235,21 @@
         $('.fdatepicker').fdatepicker();
 
         $("#addPayment").hide();
+    };
+
+    function logout() {
+        $.ajax({
+            url: baseURL+"/logout",
+            type: "GET",
+            contentType: "application/json",
+            dataType: "json",
+            success: function(data) {                
+            },
+            error: function() {
+            },
+            complete: function() {
+            }
+        });
     };
 
     $(document).ready(function() {
