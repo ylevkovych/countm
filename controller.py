@@ -1,7 +1,7 @@
 from bottle import route, template, request, redirect, hook, abort
 
 
-// dao
+# dao
 countm_dao = None
 summary_dao = None
 user_dao = None
