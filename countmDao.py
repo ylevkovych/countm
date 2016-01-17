@@ -1,4 +1,3 @@
-
 from bson import ObjectId
 
 class CountmDao(object):
@@ -41,6 +40,3 @@ class CountmDao(object):
         data['how_many'] = int(how_many) if str(how_many).isdigit() else 0 if how_many else 0
 
         return data
-
-
-        

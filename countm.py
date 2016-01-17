@@ -113,7 +113,7 @@ def payment_summary():
     APP ATTRIBUTES
 '''
 
-connection_string = "mongodb://localhost"
+connection_string = "mongodb://database"
 connection = pymongo.MongoClient(connection_string)
 database = connection.countm
 
@@ -129,4 +129,4 @@ session_opts = {
 }
 _app = SessionMiddleware(app(), session_opts)
 
-run(server=PasteServer, app=_app, host='localhost', port=8082)
+run(app=_app, host='127.0.0.1', port=8082, server='gunicorn', workers=3)

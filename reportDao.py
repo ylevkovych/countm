@@ -1,15 +1,13 @@
-
-
 class ReportDao(object):
 
     def __init__(self, database):
         self.db = database
-        self.countm = database.countm
+        self.countm = self.db.countm
 
     def payment_summary(self):
         data = {}
         result = self.countm.aggregate([ {'$group': {'_id': {'who': "$who", 'what': "$what"}, 'how_many': {'$sum': "$how_many"} } } ])
-        for r in result['result']:
+        for r in result:
             who = r['_id']['who']
             what = r['_id']['what']
             how_many = r['how_many']
